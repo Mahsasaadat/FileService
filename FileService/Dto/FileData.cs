@@ -1,4 +1,4 @@
 ﻿namespace FileService.Dto
 {
-    public record FileData(FileDto FileDto,byte[] Data);
+    public record FileData(FileDto? FileDto,byte[] Data);
 }
