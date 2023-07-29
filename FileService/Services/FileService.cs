@@ -24,8 +24,8 @@ namespace FileService.Services
             var filePath = _fileProvider.GetFileDirctory(directory, file.FileName);
             await _fileProvider.UploadIFormFile(file, filePath);
         }
-      
-        public async Task ReadFileLineAndDownload(IFormFile file,string directory)
+
+        public async Task ReadFileLineAndDownload(IFormFile file, string directory)
         {
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
@@ -38,7 +38,7 @@ namespace FileService.Services
 
             }
         }
-        public string? GetImageUrl(string directory, string fileName)=> _fileProvider.GetImageUrlByName(directory, fileName);
+        public Byte[]? GetImageBytes(string directory, string fileName) => _fileProvider.GetImageData(directory, fileName);
 
         private async Task DownloadAndSaveFileByUrl(string directory, string url)
         {

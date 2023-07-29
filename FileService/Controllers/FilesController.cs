@@ -26,12 +26,16 @@ namespace FileService.Controllers
         {
             return Ok(await _fileService.GetFiles());
         }
-        [HttpGet("GetUrlByName")]
-        public ActionResult<string?> LoadImage(string fileName)
+        [HttpGet("DownloadByName")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DownloadFile(string fileName)
         {
-            return Ok(_fileService.GetImageUrl(directory, fileName));
+            var bytes = _fileService.GetImageBytes(_directory, fileName);
+            if (bytes==null)
+                return BadRequest("File Not Found");
+            return File(bytes, "image / jpeg");
         }
-
         [HttpPost("UploadByTextFile")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

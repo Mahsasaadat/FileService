@@ -36,11 +36,14 @@ namespace FileService.Services
                 await file.CopyToAsync(stream);
             }
         }
-        public string? GetImageUrlByName(string directory, string fileName)
+        public Byte[]? GetImageData(string directory, string fileName)
         {
+            Byte[]? result = null;
             DirectoryInfo directoryToSearch = new DirectoryInfo(directory);
             FileInfo fileInDir = directoryToSearch.GetFiles(fileName).FirstOrDefault();
-            return fileInDir?.FullName;
+            if(fileInDir != null)
+                result=System.IO.File.ReadAllBytes(fileInDir.FullName);
+            return result;
         }
         public void CreateDirectoryIfNotExist(string dir)
         {
