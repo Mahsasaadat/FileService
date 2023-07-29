@@ -24,14 +24,33 @@ namespace FileService.Services
             var filePath = _fileProvider.GetFileDirctory(directory, file.FileName);
             await _fileProvider.UploadIFormFile(file, filePath);
         }
-        public async Task DownloadAndSaveFileByUrl(string directory, string url)
+      
+        public async Task ReadFileLineAndDownload(IFormFile file,string directory)
+        {
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                while (reader.Peek() >= 0)
+                {
+                    var uri = reader.ReadLine();
+                    if (ValidateUrl(uri))
+                        await DownloadAndSaveFileByUrl(directory, uri);
+                }
+
+            }
+        }
+        public string? GetImageUrl(string directory, string fileName)=> _fileProvider.GetImageUrlByName(directory, fileName);
+
+        private async Task DownloadAndSaveFileByUrl(string directory, string url)
         {
             var fileDto = DownloadAndUploadImageByUrl(directory, url);
             if (fileDto != null && !await ExistFile(fileDto.OriginalURL))
                 await AddFile(fileDto);
         }
-        public string? GetImageUrl(string directory, string fileName)=> _fileProvider.GetImageUrlByName(directory, fileName);
-
+        private static bool ValidateUrl(string uri)
+        {
+            Uri url;
+            return Uri.TryCreate(uri, UriKind.Absolute, out url);
+        }
         private async Task AddFile(FileDto fileDto)
         {
             await _fileRepository.AddFile(new DAL.File

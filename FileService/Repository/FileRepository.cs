@@ -13,7 +13,7 @@ namespace FileService.Repository
         public async Task AddFile(DAL.File file)
         {
             await _context.Files.AddAsync(file);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
         public async Task<List<DAL.File>> GetAllFiles()
         {

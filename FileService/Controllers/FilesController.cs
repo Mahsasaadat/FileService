@@ -10,16 +10,18 @@ namespace FileService.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IFileService _fileService;
-        private string directory;
-        private string userDirectory;
-        public FilesController(IConfiguration configuration, IFileService fileService)
+        private string _directory;
+        private string _userDirectory;
+        
+        public FilesController(IConfiguration configuration, IFileService fileService, IWebHostEnvironment webHostEnvironment)
         {
             _configuration = configuration;
             _fileService = fileService;
-            directory = configuration["ImageDirectory"];
-            userDirectory = Path.Combine(directory, configuration["UserImageDirectory"]);
+            _directory = Path.Combine(webHostEnvironment.WebRootPath, configuration["ImageDirectory"]); ;
+            _userDirectory = Path.Combine(_directory, configuration["UserImageDirectory"]);
+
         }
-        [HttpGet("Get")]
+        [HttpGet]
         public async Task<ActionResult<List<FileDto>>> GetStoredFiles()
         {
             return Ok(await _fileService.GetFiles());
@@ -31,39 +33,30 @@ namespace FileService.Controllers
         }
 
         [HttpPost("UploadByTextFile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Upload(IFormFile textFile)
         {
-            ValidateFormat(textFile, "txt");
-            using (var reader = new StreamReader(textFile.OpenReadStream()))
-            {
-                while (reader.Peek() >= 0)
-                {
-                    var uri = reader.ReadLine();
-                    if (ValidateUrl(uri))
-                        await _fileService.DownloadAndSaveFileByUrl(directory, uri);
-                }
-
-            }
+            if(!ValidateFormat(textFile, "txt"))
+                return BadRequest("File Format Not Supported");
+            await _fileService.ReadFileLineAndDownload(textFile,_directory);
             return Ok();
 
         }
         [HttpPost("UploadUserImage")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> UploadUserImage(IFormFile file)
         {
-            ValidateFormat(file, _configuration["SupportedImageFormats"]);
-            await _fileService.UploadIFormFileInDirectory(userDirectory, file);
+            if(!ValidateFormat(file, _configuration["SupportedImageFormats"]))
+                return BadRequest("File Format Not Supported");
+            await _fileService.UploadIFormFileInDirectory(_userDirectory, file);
             return Ok();
 
         }
-        private static bool ValidateUrl(string uri)
-        {
-            Uri url;
-            return Uri.TryCreate(uri, UriKind.Absolute, out url);
-        }
-        private void ValidateFormat(IFormFile file, string supportedFormates)
-        {
-            if (!supportedFormates.Contains(file.FileName.Split('.').Last().ToLower()))
-                throw new Exception("File Format Not Supported");
-        }
+        private bool ValidateFormat(IFormFile file, string supportedFormates) => supportedFormates.Contains(file.FileName.Split('.').Last().ToLower());
+     
+
+ 
     }
 }

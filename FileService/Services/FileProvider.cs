@@ -29,6 +29,8 @@ namespace FileService.Services
         }
         public async Task UploadIFormFile(IFormFile file, string path)
         {
+            if (CheckIfFileExist(path))
+                return;
             using (var stream = System.IO.File.Create(path))
             {
                 await file.CopyToAsync(stream);
