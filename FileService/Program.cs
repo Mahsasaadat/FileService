@@ -1,4 +1,6 @@
 using FileService.DAL;
+using FileService.Repository;
+using FileService.Services;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("cs")));
-
+builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<IFileService, FileService.Services.FileService>();
+builder.Services.AddScoped<IFileProvider, FileProvider>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

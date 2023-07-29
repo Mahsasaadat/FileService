@@ -20,12 +20,12 @@ namespace FileService.Services
                 return new FileData(fileDto, fileData);
             }
         }
-        public void UploadFileData(byte[]? fileData, string fileName, string directory)
+        public void UploadFileData(FileData fileData, string directory)
         {
-            string fileDirectory = GetFileDirctory(directory, fileName);
+            string fileDirectory = GetFileDirctory(directory, fileData.FileDto.LocalName);
             if (CheckIfFileExist(fileDirectory) || fileData == null)
                 return;
-            System.IO.File.WriteAllBytes(fileDirectory, fileData);
+            System.IO.File.WriteAllBytes(fileDirectory, fileData.Data);
         }
         public async Task UploadIFormFile(IFormFile file, string path)
         {

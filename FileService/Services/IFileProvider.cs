@@ -9,6 +9,6 @@ namespace FileService.Services
         void CreateDirectoryIfNotExist(string dir);
         string? GetImageUrlByName(string directory, string fileName);
         string GetFileDirctory(string dir, string fileName);
-        void UploadFileData(byte[] fileData, string fileName, string directory);
+        void UploadFileData(FileData fileData, string directory);
     }
 }
