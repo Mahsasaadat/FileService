@@ -4,8 +4,7 @@ namespace FileService.Services
 {
     public interface IFileProvider
     {
-        (FileDto? fileDto, byte[]? fileData) DownloadImageByUrl(string dir, string imageUrl);
-
+        FileData DownloadImageByUrl(string dir, string imageUrl);
         Task UploadIFormFile(IFormFile file, string path);
         void CreateDirectoryIfNotExist(string dir);
         string? GetImageUrlByName(string directory, string fileName);
