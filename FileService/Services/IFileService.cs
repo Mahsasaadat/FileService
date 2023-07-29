@@ -1,9 +1,12 @@
-﻿namespace FileService.Services
+﻿using FileService.Dto;
+
+namespace FileService.Services
 {
     public interface IFileService
     {
-        Task AddFile(DAL.File file);
-        Task<List<DAL.File>> GetAllFiles();
-        Task<bool> Exist(string originalUrl);
+        Task<List<FileDto>> GetFiles();
+        Task DownloadAndSaveFileByUrl(string directory, string url);
+        Task UploadIFormFileInDirectory(string directory, IFormFile file);
+        string GetImageUrl(string directory, string fileName);
     }
 }
